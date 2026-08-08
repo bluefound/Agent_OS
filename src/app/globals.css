@@ -1,26 +1,56 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 210 14% 5%; /* #0B0D0F */
+    --foreground: 210 20% 98%;
+    --card: 210 15% 7%; /* #111417 */
+    --card-foreground: 210 20% 98%;
+    --popover: 210 15% 7%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 82 86% 65%; /* #B8F35A Warm Electric Lime */
+    --primary-foreground: 210 15% 7%;
+    --secondary: 210 13% 10%; /* #171B1F */
+    --secondary-foreground: 210 20% 98%;
+    --muted: 210 13% 14%;
+    --muted-foreground: 215 15% 65%;
+    --accent: 82 86% 65%; /* #B8F35A */
+    --accent-foreground: 210 15% 7%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 0 0% 100% / 0.08; /* rgba(255,255,255,0.08) */
+    --input: 0 0% 100% / 0.08;
+    --ring: 82 86% 65%;
+    --radius: 0.5rem; /* 8px buttons/inputs, 12-16px cards */
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #0B0D0F;
+  color: #F3F4F6;
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Numerals class for numbers, stats, match scores, contract dates */
+.font-mono-data {
+  font-family: var(--font-mono), 'JetBrains Mono', 'IBM Plex Mono', monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0B0D0F;
+}
+::-webkit-scrollbar-thumb {
+  background: #171B1F;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #23282F;
 }
