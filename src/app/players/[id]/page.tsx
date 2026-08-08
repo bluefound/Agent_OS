@@ -8,8 +8,9 @@ import { StatCard } from '@/components/ui/stat-card';
 import { MatchDial } from '@/components/ui/match-dial';
 import { CareerTimeline } from '@/components/players/career-timeline';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { getPlayerById, getPlayerStatistics, getPlayerCareer, getPlayerCommercial, getPlayerDocuments } from '@/lib/db';
-import type { Player, PlayerStatistic, CareerEntry, CommercialOpportunity, PlayerDocument } from '@/lib/types';
+import { StatsChart } from '@/components/players/stats-chart';
+import { getPlayerById, getPlayerStatistics, getPlayerMonthlyStats, getPlayerCareer, getPlayerCommercial, getPlayerDocuments } from '@/lib/db';
+import type { Player, PlayerStatistic, MonthlyStatistic, CareerEntry, CommercialOpportunity, PlayerDocument } from '@/lib/types';
 import { FileText, Shield, Sparkles, Building2 } from 'lucide-react';
 
 export default function PlayerDetailPage() {
@@ -18,6 +19,7 @@ export default function PlayerDetailPage() {
 
   const [player, setPlayer] = useState<Player | null>(null);
   const [stats, setStats] = useState<PlayerStatistic | null>(null);
+  const [monthlyStats, setMonthlyStats] = useState<MonthlyStatistic[]>([]);
   const [career, setCareer] = useState<CareerEntry[]>([]);
   const [commercial, setCommercial] = useState<CommercialOpportunity[]>([]);
   const [documents, setDocuments] = useState<PlayerDocument[]>([]);
@@ -28,13 +30,15 @@ export default function PlayerDetailPage() {
       const p = await getPlayerById(id);
       if (p) {
         setPlayer(p);
-        const [st, ca, co, doc] = await Promise.all([
+        const [st, ms, ca, co, doc] = await Promise.all([
           getPlayerStatistics(p.id),
+          getPlayerMonthlyStats(p.id),
           getPlayerCareer(p.id),
           getPlayerCommercial(p.id),
           getPlayerDocuments(p.id),
         ]);
         if (st) setStats(st);
+        setMonthlyStats(ms);
         setCareer(ca);
         setCommercial(co);
         setDocuments(doc);
@@ -85,12 +89,24 @@ export default function PlayerDetailPage() {
               <StatCard label="DUELS WON %" value={`${stats?.duelsWonPct || 72}%`} />
             </div>
 
+            <StatsChart data={monthlyStats} />
             <CareerTimeline entries={career} />
           </TabsContent>
 
           {/* Career Tab */}
           <TabsContent value="career" className="mt-6">
             <CareerTimeline entries={career} />
+          </TabsContent>
+
+          {/* Statistics Tab */}
+          <TabsContent value="statistics" className="space-y-6 mt-6">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <StatCard label="PASS ACCURACY %" value={`${stats?.passAccuracy || 88}%`} />
+              <StatCard label="AERIAL DUELS %" value={`${stats?.aerialWonPct || 74}%`} />
+              <StatCard label="CLEAN SHEETS" value={stats?.cleanSheets || 12} />
+              <StatCard label="INTERCEPTIONS" value={stats?.interceptions || 67} />
+            </div>
+            <StatsChart data={monthlyStats} />
           </TabsContent>
 
           {/* Commercial Tab */}

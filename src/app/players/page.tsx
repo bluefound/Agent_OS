@@ -6,7 +6,7 @@ import { AppShell } from '@/components/layout/app-shell';
 import { MetricCard } from '@/components/ui/metric-card';
 import { FilterBar } from '@/components/players/filter-bar';
 import { PlayerTable } from '@/components/players/player-table';
-import { Button } from '@/components/ui/button';
+import { AddPlayerDialog } from '@/components/players/add-player-dialog';
 import { getPlayers, getDashboardKPIs, getUniqueCountries } from '@/lib/db';
 import type { Player, Position, ContractStatus, MarketStatus } from '@/lib/types';
 
@@ -73,10 +73,10 @@ export default function PlayersPage() {
             </p>
           </div>
 
-          <Button className="bg-[#B8F35A] text-[#0B0D0F] hover:bg-[#a3db4a] font-semibold text-xs h-9 px-4 rounded-lg flex items-center gap-1.5 shrink-0">
-            <Plus className="w-4 h-4" />
-            Add Player
-          </Button>
+          <AddPlayerDialog onAddPlayer={(newPlayer) => {
+            setPlayers(prev => [newPlayer, ...prev]);
+            setKpis(prev => ({ ...prev, totalPlayers: prev.totalPlayers + 1 }));
+          }} />
         </div>
 
         {/* KPI Strip: Four stat cards with large mono numerals */}

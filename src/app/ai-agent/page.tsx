@@ -6,12 +6,31 @@ import { MatchDial } from '@/components/ui/match-dial';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Bot, Sparkles, Send, CheckCircle2, ArrowRight, FileText, Download } from 'lucide-react';
-import type { AgentMessage, AgentToolCall } from '@/lib/types';
+import { TransferBriefModal } from '@/components/agent/transfer-brief';
+import { getPlayers, getClubs } from '@/lib/db';
+import { findOpportunitiesForPlayer } from '@/lib/matching';
+import type { AgentMessage, Player, TransferOpportunity } from '@/lib/types';
 
 export default function AIAgentPage() {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [toolStep, setToolStep] = useState<string | null>(null);
+
+  const [briefOpen, setBriefOpen] = useState(false);
+  const [briefPlayer, setBriefPlayer] = useState<Player | null>(null);
+  const [briefOpps, setBriefOpps] = useState<TransferOpportunity[]>([]);
+
+  const handleOpenBrief = async () => {
+    const allPlayers = await getPlayers();
+    const p = allPlayers[0];
+    if (p) {
+      setBriefPlayer(p);
+      const allClubs = await getClubs();
+      const opps = findOpportunitiesForPlayer(p, allClubs);
+      setBriefOpps(opps);
+      setBriefOpen(true);
+    }
+  };
 
   const [messages, setMessages] = useState<AgentMessage[]>([
     {
@@ -201,10 +220,10 @@ export default function AIAgentPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button size="sm" className="bg-[#B8F35A] text-[#0B0D0F] font-semibold text-xs h-7">
+                    <Button onClick={handleOpenBrief} size="sm" className="bg-[#B8F35A] text-[#0B0D0F] font-semibold text-xs h-7">
                       Open Brief
                     </Button>
-                    <Button size="sm" variant="outline" className="border-white/10 text-xs h-7">
+                    <Button onClick={handleOpenBrief} size="sm" variant="outline" className="border-white/10 text-xs h-7">
                       <Download className="w-3 h-3" />
                     </Button>
                   </div>
@@ -213,6 +232,16 @@ export default function AIAgentPage() {
             </div>
           ))}
         </div>
+
+        {/* Transfer Brief Dossier Modal */}
+        {briefPlayer && (
+          <TransferBriefModal
+            player={briefPlayer}
+            opportunities={briefOpps}
+            open={briefOpen}
+            onOpenChange={setBriefOpen}
+          />
+        )}
       </div>
     </AppShell>
   );
